@@ -21,6 +21,7 @@ void A2DP::begin() {
     .dma_buf_len = 60,
     .use_apll = true,
     .tx_desc_auto_clear = true,
+    .fixed_mclk = 0
   };
   i2s_driver_install(I2S_NUM_0, &i2s_config, 0, NULL);
 

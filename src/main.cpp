@@ -3,10 +3,7 @@
 
 A2DP a2dp("ESP32-Speaker");
 
-void setup() {
+extern "C" void app_main() {
+  initArduino();
   a2dp.begin();
-}
-
-void loop() {
-  
 }
