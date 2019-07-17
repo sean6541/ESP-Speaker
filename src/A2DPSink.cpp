@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "a2dp_sink.h"
+#include "A2DPSink.h"
 #include <esp_bt.h>
 #include <esp_bt_main.h>
 #include <esp_bt_device.h>
@@ -7,9 +7,9 @@
 #include <esp_a2dp_api.h>
 #include <driver/i2s.h>
 
-A2DP::A2DP(const char* dev_name) : _dev_name(dev_name) {}
+A2DPSink A2DPsink;
 
-void A2DP::begin() {
+void A2DPSink::begin(const char* dev_name) {
   i2s_config_t i2s_config = {
     .mode = static_cast<i2s_mode_t>(I2S_MODE_MASTER | I2S_MODE_TX),
     .sample_rate = 48000,
@@ -38,7 +38,7 @@ void A2DP::begin() {
   esp_bluedroid_init();
   esp_bluedroid_enable();
 
-  esp_bt_dev_set_device_name(_dev_name);
+  esp_bt_dev_set_device_name(dev_name);
 
   esp_a2d_register_callback([] (esp_a2d_cb_event_t event, esp_a2d_cb_param_t *param) {
     a2dp_callback_data_t a2dp_callback_data = { .event = event, .param = param };
@@ -52,7 +52,7 @@ void A2DP::begin() {
   esp_bt_gap_set_scan_mode(ESP_BT_SCAN_MODE_CONNECTABLE_DISCOVERABLE);
 }
 
-void A2DP::_a2dpEventHandler(void *a2dp_callback_data_v, uint32_t) {
+void A2DPSink::_a2dpEventHandler(void *a2dp_callback_data_v, uint32_t) {
   a2dp_callback_data_t a2dp_callback_data = *(a2dp_callback_data_t *) a2dp_callback_data_v;
   esp_a2d_cb_event_t event = a2dp_callback_data.event;
   esp_a2d_cb_param_t *param = a2dp_callback_data.param;
@@ -86,7 +86,7 @@ void A2DP::_a2dpEventHandler(void *a2dp_callback_data_v, uint32_t) {
   }
 }
 
-void A2DP::_a2dpDataHandler(void *data_v, uint32_t len) {
+void A2DPSink::_a2dpDataHandler(void *data_v, uint32_t len) {
   const uint8_t *data = (const uint8_t *) data_v;
   size_t bytes_written;
   i2s_write(I2S_NUM_0, data, len, &bytes_written, portMAX_DELAY);

@@ -1,9 +1,10 @@
 #include <Arduino.h>
-#include "a2dp_sink.h"
+#include "A2DPSink.h"
 
-A2DP a2dp("ESP32-Speaker");
+void setup() {
+  A2DPsink.begin("ESP-Speaker");
+}
 
-extern "C" void app_main() {
-  initArduino();
-  a2dp.begin();
+void loop() {
+
 }
